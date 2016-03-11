@@ -1,0 +1,17 @@
+{
+    "name": "stevemarvell/ink-splat",
+    "description": "Technical Test For Job Application",
+    "require": {
+        "php": "~5.4",
+        "guzzlehttp/guzzle": "^4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    },
+    "authors": [
+        {
+            "name": "Steve Marvell",
+            "email": "stevemarvell@gmail.com"
+        }
+    ]
+}
