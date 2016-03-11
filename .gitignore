@@ -1,0 +1,8 @@
+/vendor/
+
+# Emacs backups and autosaves
+*~
+.\#*
+\#*\#
+
+
