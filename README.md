@@ -1,4 +1,5 @@
 # InkSplat
+
 Technical Test For Job Application
 
 ## Requirements
@@ -7,14 +8,15 @@ PHP 5.4+
 
 ## Installation
 
-composer install --no-dev
-
-path
-
-run
-
-writeable dir
+  git clone git@github.com:stevemarvell/InkSplat.git
+  cd InkSplat
+  composer install --no-dev
+  php bin/splat.php
 
 ## TODO
 
-Handle Curl based exceptions with better messages
+Check for particular exceptions thrown by external libraries.
+
+Add additional unit tests based on confidence in data, though gemneral exceptions are caught.
+
+Consider getopt
