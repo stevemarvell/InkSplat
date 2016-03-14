@@ -18,18 +18,18 @@ class Dribble
     protected $site_url;
 
     /**
-     * Page body
+     * Site page body
      *
      * @var string
      */
-    protected $body;
+    protected $site_body;
 
     /**
      * Parsed data
      *
      * @var string
      */
-    protected $data;
+    protected $site_data;
 
     /**
      * Constructor
@@ -61,31 +61,128 @@ class Dribble
     protected function handleSite()
     {
         // @todo we're assuming exceptions handle everything for now so not check now
-        // in addition wrapping exception handler should manage this
-        $this->downloadPage();
+        
+        $html = $this->downloadSitePage();
 
-        // @todo handle this not working
-        $this->parsePage();
+        $dom = new \simple_html_dom();
+        $dom->load($html);
+
+        foreach ($dom->find('div[class=entry-wrap]') as $section) {
+
+            $section_dom = new \simple_html_dom();
+            $section_dom->load($section);
+
+            $tag_good = false;
+
+            foreach ($section_dom->find('a[rel=tag]') as $tag) {
+
+                if (strpos($tag,'Digitalia') !== false) {
+                    $tag_good = true;
+                    break;
+                }
+            }
+
+            if ($tag_good) {
+
+                // looks like the only use of li
+
+                foreach ($section_dom->find('li') as $item) {
+
+                    if (preg_match('/href="([^"]+)"/',$item,$matches)) {                        
+                        
+                        $url = $matches[1];
+
+                        $this->handleLink($url);
+                    }
+                }
+            }
+        }
     }
     
+    protected function handleLink($url)
+    {
+        try {
+            $html = $this->downloadPage($url);
+
+            $dom = new \simple_html_dom();
+            $dom->load($html);
+
+            $result = [
+                      'url' => $url,
+                      'filesize' => strlen($html),
+                      ];
+
+            if (isset($this->site_data['results'])) {
+                
+                $this->site_data['results'][] = $result;
+
+            } else {
+                
+                $this->site_data['results'] = [ $result ];
+            }
+
+        }
+        catch (\Exception $e) {
+                  
+            $error = [
+                      'code' => $e->getCode(),
+                      'message' => $e->getMessage(),
+                      'site' => $this->site_url,
+                      'url' => $url
+                      ];
+
+            if (isset($this->site_data['errors'])) {
+                
+                $this->site_data['errors'][] = $error;
+
+            } else {
+                
+                $this->site_data['errors'] = [ $error ];
+            }
+        }
+    }
+
     /**
-     * Download the page
+     * Download the site page
      *
-     * @return bool status
+     * public for testing
+     *
+     * @return string body
      */
-    protected function downloadPage()
+    public function downloadSitePage()
+    {    
+        // we may wish to catch some specifics
+
+        $this->site_body = $this->downloadPage($this->site_url);
+
+        return $this->site_body;
+    }
+
+    /**
+     * Download any page
+     *
+     * @return string body
+     */
+    protected function downloadPage($url)
     {    
         $client = new \GuzzleHttp\Client();
 
-        // @todo can we assume all statuses other than 200 are handled by guzzle exceptions?
+        // @todo check which guzzle creates an exception for all the things we want that we don't handle
 
-        $res = $client->get($this->site_url);
+        $request = $client->createRequest('GET', $url, ['allow_redirects' => false]);
+        $response = $client->send($request);
 
-        $this->body = $res->getBody();
+        $code = $response->getStatusCode();
         
-        // dev note: if you update this to possibly not return true, change handleSite()
+        if ($code != 200) {
+            $e = new ExResponseException($response->getReasonPhrase(),$code);
+            $e->setUrl($url);
+            throw $e;
+        }
 
-        return true;
+        // @todo other types of response errors to handle
+
+        return $response->getBody();
     }
 
     /**
@@ -95,27 +192,17 @@ class Dribble
      */
     public function hasBody()
     {    
-        return isset($this->body);
+        return isset($this->site_body);
     }
     
     /**
-     * Parse the page
+     * Get data
      *
-     * @return bool status
+     * @return array data
      */
-    protected function parsePage()
+    public function getData()
     {    
-        return true;
-    }
-
-    /**
-     * Has a data - mostly for testing
-     *
-     * @return bool status
-     */
-    public function hasData()
-    {    
-        return isset($this->data);
+        return $this->site_data;
     }
     
 }

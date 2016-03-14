@@ -18,7 +18,7 @@ class WebTest extends PHPUnit_Framework_TestCase
 
         $site = new Dribble($url);
 
-        $site->go();
+        $site->downloadSitePage();
     }
 
     /**
@@ -47,7 +47,7 @@ class WebTest extends PHPUnit_Framework_TestCase
 
         $site = new Dribble($url);
 
-        $site->go();
+        $site->downloadSitePage();
 
         $this->assertEquals(true, $site->hasBody());
     }
@@ -62,11 +62,13 @@ class WebTest extends PHPUnit_Framework_TestCase
 
         $site = new Dribble($url);
 
-        $site->go();
+        $site->downloadSitePage();
 
         $this->assertEquals(true, $site->hasBody());
     }
 
     // @todo create and test a page with content
+
+    // @todo any exceptions associated with other page problems, particularly redirects
 }
 ?>
