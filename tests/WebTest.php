@@ -14,7 +14,7 @@ class WebTest extends PHPUnit_Framework_TestCase
      */
     public function testBadSite()
     {
-        $url = "absolutelydefinitelynotarealdomaindskfjnhdaskjdfasjfds.com";
+        $url = "http://absolutelydefinitelynotarealdomaindskfjnhdaskjdfasjfds.com";
 
         $site = new Dribble($url);
 
@@ -38,12 +38,27 @@ class WebTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Page found 200
+     * Page found 200 - with http
      *
      */
-    public function testGoodSitePage()
+    public function testGoodSiteHttp()
     {
-        $url = "http://www.black-ink.org/";
+        $url = "http://www.black-ink.org";
+
+        $site = new Dribble($url);
+
+        $site->go();
+
+        $this->assertEquals(true, $site->hasBody());
+    }
+
+    /**
+     * Page found 200 - no http
+     *
+     */
+    public function testGoodSiteNoHttp()
+    {
+        $url = "www.black-ink.org";
 
         $site = new Dribble($url);
 
