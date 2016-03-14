@@ -72,8 +72,6 @@ class Dribble
             $section_dom = new \simple_html_dom();
             $section_dom->load($section);
 
-            $tag_good = false;
-
             foreach ($section_dom->find('a[rel=tag]') as $tag) {
 
                 if (strpos($tag,'Digitalia') !== false) {
@@ -97,6 +95,13 @@ class Dribble
                 }
             }
         }
+
+        // round of the total
+
+        if (isset($this->site_data['total'])) {
+
+            $this->site_data['total'] = sprintf('%0.1dkb',$this->site_data['total'] / 1024);
+        }
     }
     
     protected function handleLink($url)
@@ -110,7 +115,45 @@ class Dribble
             $result = [
                       'url' => $url,
                       'filesize' => strlen($html),
+                      'meta description' => null,
+                      'keywords' => null,
+                      'title' => null
                       ];
+
+            // lets assume world where people don't have multiple meta tags
+            // og: could be used as fallback
+
+            if ($meta = $dom->find('title',0)) {
+
+                $result['title'] = html_entity_decode_numeric($meta->innertext());
+            }
+
+            if ($meta = $dom->find('meta[name=description]',0)) {
+
+                if (preg_match('/content="([^"]+)"/',$meta,$matches)) {
+
+                    $result['meta description'] = html_entity_decode_numeric($matches[1]);
+                }
+            }
+
+            if ($meta = $dom->find('meta[name=keywords]',0)) {
+
+                if (preg_match('/content="([^"]+)"/',$meta,$matches)) {
+
+                    $result['keywords'] = html_entity_decode_numeric($matches[1]);
+                }
+            }
+
+            if (isset($this->site_data['total'])) {
+                
+                $this->site_data['total'] += $result['filesize'];
+
+            } else {
+
+                $this->site_data['total'] = $result['filesize'];
+            }
+
+            $result['filesize'] = sprintf('%0.1fkb',$result['filesize'] / 1024);
 
             if (isset($this->site_data['results'])) {
                 
