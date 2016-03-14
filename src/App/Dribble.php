@@ -61,6 +61,7 @@ class Dribble
     protected function handleSite()
     {
         // @todo we're assuming exceptions handle everything for now so not check now
+        // in addition wrapping exception handler should manage this
         $this->downloadPage();
 
         // @todo handle this not working

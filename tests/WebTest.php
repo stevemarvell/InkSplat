@@ -2,6 +2,8 @@
 
 use App\Dribble;
 
+// test head page conditions
+
 class WebTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -49,5 +51,7 @@ class WebTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(true, $site->hasBody());
     }
+
+    // @todo create and test a page with content
 }
 ?>
