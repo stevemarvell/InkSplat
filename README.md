@@ -8,10 +8,10 @@ PHP 5.4+
 
 ## Installation
 
-  git clone git@github.com:stevemarvell/InkSplat.git
-  cd InkSplat
-  composer install --no-dev
-  php bin/splat.php
+    git clone git@github.com:stevemarvell/InkSplat.git
+    cd InkSplat
+    composer install --no-dev
+    php bin/splat.php
 
 ## TODO
 
