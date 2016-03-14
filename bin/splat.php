@@ -17,7 +17,7 @@ try
 }
 catch (RequestException $e) 
 {
-    # @todo more procesing to handle curl errors
+    // @todo more procesing to handle curl errors
 
     $error = [
               'code' => $e->getCode() ?: 999,
